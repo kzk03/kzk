@@ -1,6 +1,6 @@
+import numpy as np
 import pandas as pd
 from scipy.stats import mannwhitneyu
-import numpy as np
 
 # データ読み込み
 file_path = "/Users/kazuki-h/scripts/results/movement/out_dependencies.csv"  # CSVファイルのパスを指定

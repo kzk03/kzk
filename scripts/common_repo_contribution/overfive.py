@@ -1,7 +1,8 @@
-import pandas as pd
 import ast
-from itertools import combinations
 from collections import defaultdict
+from itertools import combinations
+
+import pandas as pd
 
 # データの読み込み（CSVファイルを読み込む場合）
 file_path = "/Users/kazuki-h/newresearch/results/movement/Zinto/zookeeper_pre_contribution_with_developers.csv"  # ファイルパスを指定

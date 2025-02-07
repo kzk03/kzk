@@ -1,7 +1,9 @@
-import pandas as pd
 import os
-from datetime import timedelta
 from collections import defaultdict
+from datetime import timedelta
+
+import pandas as pd
+
 
 # 1. データの読み込み
 def load_all_developer_data(data_dir):

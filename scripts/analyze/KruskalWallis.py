@@ -1,6 +1,6 @@
+import matplotlib.pyplot as plt
 import pandas as pd
 from scipy.stats import kruskal
-import matplotlib.pyplot as plt
 
 # 1. CSVファイルを読み込む
 file_path = "/Users/kazuki-h/scripts/results/into_zookeeper.csv"  # CSVファイルのパスを指定

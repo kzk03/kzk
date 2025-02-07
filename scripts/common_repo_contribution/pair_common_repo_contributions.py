@@ -1,10 +1,12 @@
-import pandas as pd
 import ast
-from itertools import combinations
 from collections import defaultdict
+from itertools import combinations
+
+import pandas as pd
 
 # データの読み込み（CSVから）
 file_path = "../results/movement/Zout/zookeeper_post_contribution_with_developers.csv"  # CSVファイルのパス
+
 df = pd.read_csv(file_path)
 
 # 1. developersカラムをリスト形式に変換
