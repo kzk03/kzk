@@ -17,12 +17,12 @@ if not GITHUB_TOKEN:
 HEADERS = {"Authorization": f"token {GITHUB_TOKEN}"}
 
 # 取得する開発者リストのCSVファイル
-developer_list_file = "/Users/kazuki-h/newresearch/results/unique_developer_list.csv"  # 実際のパスに変更
+developer_list_file = "/Users/kazuki-h/newresearch/results/B.csv"
 developers_df = pd.read_csv(developer_list_file)
 
 # 取得する日付範囲を指定
-SINCE_DATE = "2005-01-01T00:00:00Z"  # ← ここを変更すれば開始日を指定可能
-UNTIL_DATE = "2024-12-31T23:59:59Z"  # ← ここで終了日を指定
+SINCE_DATE = "2005-01-01T00:00:00Z"
+UNTIL_DATE = "2024-12-31T23:59:59Z"
 
 # 保存フォルダを作成
 output_dir = "/Users/kazuki-h/newresearch/results/commit_history"
@@ -36,7 +36,7 @@ def check_rate_limit(response):
         wait_time = reset_time - current_time
         if wait_time > 0:
             print(f"⚠ APIのレート制限に達しました。{wait_time}秒待機します...")
-            time.sleep(wait_time + 1)  # 安全のため1秒余分に待機
+            time.sleep(wait_time + 1)
         return True
     return False
 
@@ -63,20 +63,40 @@ for developer in developers_df['developer'].dropna():
             break
 
         for commit in commits:
+            sha = commit['sha']
+            repo_name = commit['repository']['full_name']
+            commit_message = commit['commit']['message']
+            commit_date = commit['commit']['committer']['date']
+
+            # 各コミットの変更ファイル情報を取得
+            commit_details_url = f"https://api.github.com/repos/{repo_name}/commits/{sha}"
+            commit_response = requests.get(commit_details_url, headers=HEADERS)
+
+            if check_rate_limit(commit_response):
+                continue  # レート制限後に再試行
+
+            if commit_response.status_code == 200:
+                commit_details = commit_response.json()
+                changed_files = [file['filename'] for file in commit_details.get('files', [])]
+            else:
+                print(f"⚠ ファイル情報を取得できませんでした: {commit_details_url}")
+                changed_files = []
+
             commit_data.append([
                 developer,
-                commit['repository']['full_name'],
-                commit['sha'],
-                commit['commit']['message'],
-                commit['commit']['committer']['date']
+                repo_name,
+                sha,
+                commit_message,
+                commit_date,
+                ", ".join(changed_files)  # 変更ファイルをカンマ区切りで保存
             ])
 
         page += 1
-        time.sleep(1)  # API制限を避けるために遅延を挿入
+        time.sleep(1)
 
     # DataFrame に変換
     if commit_data:
-        commit_df = pd.DataFrame(commit_data, columns=['developer', 'repo', 'commit_sha', 'commit_message', 'commit_date'])
+        commit_df = pd.DataFrame(commit_data, columns=['developer', 'repo', 'commit_sha', 'commit_message', 'commit_date', 'changed_files'])
 
         # 各開発者ごとにCSV保存
         developer_filename = os.path.join(output_dir, f"{developer}.csv")
