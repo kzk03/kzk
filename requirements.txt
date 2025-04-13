@@ -1,3 +1,6 @@
-requests
-pandas
+gensim
+scikit-learn
+tqdm
 python-dotenv
+numpy<2
+scipy
